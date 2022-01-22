@@ -1,12 +1,12 @@
 let order = 1;
 let adding = false;
 
-const error = document.querySelector('.error');
-const message = 'Please add a description.';
+const error = document.querySelector(".error");
+const message = "Please add a description.";
 
-const add_btn = document.querySelector('.add');
-add_btn.addEventListener('click', () => {
-  const target = document.querySelector('#requested');
+const add_btn = document.querySelector(".add");
+add_btn.addEventListener("click", () => {
+  const target = document.querySelector("#requested");
   if (adding == false) {
     adding = true;
     target.appendChild(create_item());
@@ -16,7 +16,53 @@ add_btn.addEventListener('click', () => {
 });
 
 const create_item = () => {
+  //Create item and assign class, id, and draggable
+  var item = document.createElement("div");
+  item.classList.add("item");
+  item.id = "item-" + order;
+  item.draggable = true;
+
+  //Add dragstart and dragend listeners
+  item.addEventListener("dragstart", (event) => {
+    event.dataTransfer.setData("text", event.target.id);
+  });
+  item.addEventListener("dragend", (event) => {
+    event.dataTransfer.clearData();
+  });
+
+  //Create input element
+  var input = document.createElement("input");
+  item.appendChild(input);
+
+  //Create a save button
+  var save_btn = document.createElement("button");
+  save_btn.innerHTML = "Save";
+
+  //Register click event for save button
+  save_btn.addEventListener("click", () => {
+    error.innerHTML = "";
+    if (input.value !== "") {
+      order++;
+      item.innerHTML = input.value;
+      adding = false;
+    } else {
+      error.innerHTML = message;
+    }
+  });
+
+  //Append save button to item
+  item.appendChild(save_btn);
+
+  return item;
 };
 
-document.querySelectorAll('.drop').forEach(element => {
+document.querySelectorAll(".drop").forEach((element) => {
+  element.addEventListener("drop", (event) => {
+    event.preventDefault();
+    const id = event.dataTransfer.getData("text");
+    event.target.appendChild(document.getElementById(id));
+  });
+  element.addEventListener("dragover", (event) => {
+    event.preventDefault();
+  });
 });
